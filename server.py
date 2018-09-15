@@ -32,6 +32,8 @@ def main():
             wt = threading.Thread(target=write,args = (ct,))
             ls.start()
             wt.start()       
+            ls.join()
+            wt.join()
             print("Disconnected with",addr)
         sr.close()
 
