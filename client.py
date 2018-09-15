@@ -15,8 +15,8 @@ def listen(ct):
 
 def write(ct):
     while True:
-        data = input().encode()
-        ct.sendall(data)
+        data = input()
+        ct.sendall(data.encode())
         if data =='quit':
             break
 
@@ -29,7 +29,6 @@ def main():
         wt.start()
         ls.join()
         wt.join()
-        ct.close()
 
 if __name__ == '__main__':
     main()
