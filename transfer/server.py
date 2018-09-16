@@ -10,7 +10,7 @@ def recv_image(ct):
     f = open('new_'+fname+'.jpg','wb')
     while True:
         data = ct.recv(100)
-        if data == ''.encode() or data == 'hello'.encode():
+        if data == ''.encode() or data == 'done'.encode():
             print('Receive image successfully!')
             break
         f.write(data)
