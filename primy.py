@@ -1,16 +1,59 @@
 HEAD = b'\x00'*3+b'\x01'*2+b'\x00'*3
 TAG = (b'\x00'*4+b'\x01'*4)*2
 TAIL = b'\x01'*3+b'\x00'*2+b'\x01'*3
-CRT = b'\x01\x00'*4
+ACK0 = b'\x01\x00'*4
+ACK1 = b'\x00\x01'*4
 FCS = b'\x01\00'*8
 
-def toframe(s):
+
+def check2(s):
+    fcs = b''
+    gcnt = 0
+    for i in range(7):
+        cnt = 0
+        for j in range(8):
+            if(s[i*8+j] == 1):
+                gcnt += 1
+                cnt += 1
+        if cnt%2==0:
+            fcs += b'\x00'
+        else:
+            fcs += b'\x01'
+    for i in range(8):
+        cnt = 0
+        for j in range(7):
+            if s[j*8+i] == 1:
+                cnt += 1
+        if cnt%2 ==0:
+            fcs += b'\x00'
+        else:
+            fcs+= b'\x01'
+    if gcnt%2 ==1:
+        fcs += b'\x01'
+    else:
+        fcs += b'\x00'
+    print('check2: %s'%fcs)
+    return fcs
+
+    
+
+def toframe(s,ack):
     ans = []
     if len(s)%48 !=0:
         s += b'\x01'*(48-len(s)%48)
     n = len(s)//48
     for i in range(n):
-        ans.append(TAG+CRT+s[i*48:i*48+48]+FCS+TAG)
+        ff = ''
+        if(ack == 1):
+            ele = ACK1+s[i*48:i*48+48]
+            fcs = check2(ele)
+            ff = TAG+ele+fcs+TAG
+        else:
+            ele = ACK0+s[i*48:i*48+48]
+            fcs = check2(ele)
+            ff = TAG+ele+fcs+TAG
+        ans.append(ff)
+
     '''
     for i in ans:
         print(i)
@@ -85,10 +128,10 @@ def find_sub(a,b):
     
 
 if __name__ == '__main__':
-    s = input()
-    s = tobits(s)
-   # print(s)
-    s = get_msg(s)
+    s = tobits(input().encode())
+    s = toframe(s,0)
     print(s)
+
+    
     
     
